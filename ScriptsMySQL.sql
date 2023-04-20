@@ -1,7 +1,7 @@
 /* Modelagem básica */
 
 
-apenas mais um teste
+testando a proteção das commits
 
 CLIENTE
 
