@@ -1,5 +1,7 @@
 /* Modelagem básica */
 
+Teste
+
 CLIENTE
 
 NOME - CARACTER(30)
