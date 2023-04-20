@@ -1,0 +1,1165 @@
+/* Modelagem básica */
+
+
+teste
+
+CLIENTE
+
+NOME - CARACTER(30)
+CPF - NUMÉRICO(11)
+EMAIL - CARACTER(30)
+TELEFONE - CARACTER(30)
+ENDERECO - CARACTER(100)
+SEXO - CARACTER(1)
+
+
+/* PROCESSOS DE MODELAGEM */
+
+MODELAGEM CONCEITUAL
+MODELAGEM LÓGICA
+MODELAGEM FÍSICA
+
+/* INICIANDO A MODELAGEM FÍSICA */
+
+CREATE DATABASE projeto; -- CRIANDO O BANCO DE DADOS
+
+USE projeto; -- CONECTANDO-SE AO BANCO 
+
+
+-- CRIANDO UMA TABELA --
+CREATE TABLE cliente( 
+	nome VARCHAR(30),
+	sexo CHAR(1),
+	email VARCHAR(30),
+	cpf INT(11),
+	telefone VARCHAR(30),
+	endereco VARCHAR(100)
+	
+);
+
+SHOW TABLES; -- VERIFICANDO AS TABELAS DO BANCO
+
+
+/* sintax básica de inserção - INSERT TO NOME_DA_TABELA... */
+
+-- 1ª FORMA - OMITINDO AS COLUNAS --
+
+INSERT INTO cliente VALUES ('Pedro', 'M', 'pedro@gmail.com', 111111111, '994270571', 'Raul Pompeia N 30 Casa 3');
+
+INSERT INTO cliente VALUES ('Maria', 'F', 'maria@gmail.com', 222222222, '992012101', 'Rua 22 N 222');
+
+INSERT INTO cliente VALUES ('Beto', 'M', NULL, 333333333, '987502259', 'Alto Alegre N 280');
+
+
+-- 2ª FORMA - COLOCANDO AS COLUNAS --
+
+INSERT INTO cliente (nome, sexo, endereco, telefone, cpf) VALUES ('Ana', 'F', 'Rua Albuquerque Pinto N 53', '986320151', 444444444);
+
+
+-- 3ª FORMA - INSERT COMPACTO (SOMENTE MYSQL)--
+
+INSERT INTO cliente VALUES ('Carlos', 'M', 'carlos@gmail.com', 555555555, '985522332', 'Rios Negro N 50'),
+							('Clara', 'F', 'clara@gmail.com', 666666666, '992554872', 'Rua Dom João N 362');
+							
+
+
+/* COMANDO SELECT */
+
+SELECT NOW();
+
+SELECT 'Felipe Mafra';
+
+SELECT 'Banco de Dados' AS "COLUNA";
+
+
+/* ALIAS ED COLUNAS */
+
+SELECT NOME AS CLIENTE, SEXO, EMAIL FROM CLIENTE;
+
+SELECT NOME, SEXO, EMAIL, ENDERECO FROM CLIENTE;
+
+SELECT NOME, SEXO, EMAIL, NOW() AS DATA_HORA FROM CLIENTE;
+
+
+
+/* FILTRANDO (WHERE) */
+
+SELECT nome, endereco FROM cliente WHERE sexo = 'Rua';
+
+SELECT nome, sexo FROM cliente WHERE endereco = 'RJ';
+
+-- OBS: nesse último irá aparecer empty set, pois o espaço de 
+-- endereço não consta apenas Rua, mas podemos utilizar
+-- o LIKE para tentar contornar.
+
+
+
+/* UTILIZANDO LIKE, ELE UTILIZA O CARACTERE CORINGA % */
+
+SELECT nome, sexo FROM cliente WHERE endereco LIKE '%Rua%'; 
+-- O CARACTERE CORINGA SERVE PARA INFORMAR QUE TEM MAIS 
+-- PALAVRAS ANTES OU DEPOIS(DEPENDENDO DA POSIÇÃO 
+-- EM QUE O % FOR COLOCADO
+
+
+
+
+/* COUNT, GROUP BY, PERFORMANCE COM OPERADORES LÓGICOS */
+
+/* CONTANDO OS REGISTROS DE UMA TABELA */
+SELECT COUNT(*) AS 'Quant. de Registros de clientes' FROM CLIENTE;
+
+SELECT SEXO, COUNT(*) FROM CLIENTE GROUP BY SEXO;
+-- AQUI O GROUP BY ESTÁ DIVINDO A COLUNA PELO SEXO DAS PESSOAS
+-- E INFORMANDO QUANTOS EXISTEM NA TABELA
+
+/* A PERFORMANCE DOS OPERADORES TEM A VER COM A ORDEM DAS 
+SELEÇÕES INSERIDAS 
+
+OR  ->  NO CASO PARA UM "OU", É COLOCADO EM PRIMEIRO LUGAR A SELEÇÃO 
+COM MAIOR PROBABILIDADE DE ACONTECER, POIS SE FOR VERDADEIRO
+TODA A SELEÇÃO É VERDADEIRA, ENTÃO O BANCO DE DADOS NEM 
+PRECISARIA CHECAR A OUTRA AFIRMATIVA
+
+AND -> AGORA PARA UM "E" NÓS COLOCAMOS A AFIRMATIVA COM MENOS
+CHANCES DE SER VERDADEIRO, POIS SE O BANCO INDENTIFICAR QUE
+A CONDIÇÃO É FALSA ELE JÁ DESCARTARIA LOGO ESSA SELEÇÃO
+
+TUDO ISSO SERIA PARA REDUZIR O TEMPO DOS PROCESSOS E
+AUMENTAR A PERFORMANCE DO BANCO DE DADOS
+
+*/
+
+
+/* EXERCÍCIO */
+
+CREATE DATABASE EXERCICIO;
+
+USE EXERCICIO;
+
+CREATE TABLE FUNCIONARIOS(
+	IDFUNCIONARIO INTEGER,
+	NOME VARCHAR(100),
+	EMAIL VARCHAR(200),
+	SEXO VARCHAR(10),
+	DEPARTAMENTO VARCHAR(100),
+	ADMISSAO VARCHAR(10),
+	SALARIO INTEGER,
+	CARGO VARCHAR(100),
+	IDREGIAO INT
+
+);
+
+SELECT COUNT(*), DEPARTAMENTO 
+FROM FUNCIONARIOS 
+GROUP BY DEPARTAMENTO 
+ORDER BY 1;
+
+SELECT SEXO, COUNT(*) 
+FROM FUNCIONARIOS 
+GROUP BY SEXO;
+
+
+SELECT NOME, DEPARTAMENTO 
+FROM FUNCIONARIOS 
+WHERE DEPARTAMENTO = 'ROUPAS' OR DEPARTAMENTO = 'FILMES' 
+ORDER BY DEPARTAMENTO;
+
+SELECT NOME, DEPARTAMENTO, EMAIL
+FROM FUNCIONARIOS 
+WHERE (DEPARTAMENTO = 'LAR' OR DEPARTAMENTO = 'FILMES') AND SEXO = 'FEMININO' 
+ORDER BY DEPARTAMENTO;
+
+SELECT NOME, SEXO, DEPARTAMENTO 
+FROM FUNCIONARIOS 
+WHERE SEXO = 'MASCULINO' OR DEPARTAMENTO = 'JARDIM';
+
+
+/* FILTRANDO VALORES NULOS */
+
+-- PARA FILTRAR VALORES NULOS NÃO UTILIZANDO =
+-- POIS O NULL NÃO PODER SER IGUALADO VISTO NULO
+-- NÃO É NADA. PORTANTO É UTILIZADO "IS NULL"
+
+
+SELECT * FROM CLIENTE WHERE EMAIL IS NULL;
+SELECT * FROM CLIENTE WHERE EMAIL IS NOT NULL;
+
+
+
+/* CLÁUSULA UPDATE */
+
+SELECT * FROM CLIENTE;
+
+UPDATE CLIENTE SET EMAIL = 'LILIAN@HOTMAIL.COM'; -- ALTERA TODOS OS EMAILS
+ 
+UPDATE CLIENTE SET EMAIL = 'PEDRO@HOTMAIL.COM' WHERE NOME = 'PEDRO';
+
+
+/* CLÁUSULA DELETE */
+
+DELETE FROM CLIENTE; -- APAGA TODOS OS REGISTROS DA TABELA
+
+SELECT COUNT(*) FROM CLIENTE;
+
+DELETE FROM CLIENTE WHERE NOME = 'CLARA';
+
+INSERT INTO CLIENTE VALUES ('NOME', 'M', 'C.OLIVEIRA@HOTMAIL.COM', 777777777, '991501122', 'SAMUEL FEITOSA N 81');
+
+DELETE FROM CLIENTE WHERE NOME = 'Carlos' AND EMAIL = 'LILIAN@HOTMAIL.COM';
+
+
+update cliente 
+set endereco = 'Raul Pompeia N 30 Casa 3 - Fortaleza - CE'
+where nome = 'Pedro';
+
+update cliente
+set endereco = 'Rua 22 N 222 - São Paulo - SP' 
+where nome = 'Maria';
+
+update cliente
+set endereco = 'Alto Alegre N 280 - Rio de Janeito - RJ' 
+where nome = 'Beto';
+
+update cliente
+set endereco = 'Rios Negro N 50 - Caucaia - CE' 
+where nome = 'Ana';
+
+update cliente
+set endereco = 'Rua Dom João N 362 - Parnamirim' 
+where nome = 'Carlos';
+
+
+
+/* MODELAGEM DE DADOS */
+
+/* 
+PRIMEIRA FORMA NORMAL 
+
+1. TODO CAMPO VETORIAL SE TORNARÁ OUTRA TABELA
+OBS: CAMPO VETORIADO É UM CAMPO QUE POSSUI
+MUITOS VALORES MAS QUE NÃO SÃO VALORES
+QUE IRIAM PARA OUTRA COLUNA.
+EXEMPLO: UMA TUPLA COM VÁRIOS TELEFONES
+
+2. TODO CAMPO QUE FOR MULTIVALORADO DEVERÁ SER CRIADO
+UMA NOVA TABELA.
+OBS: A DIFERENÇA DE UM CAMPO MULTIVALORADO PARA UM
+CAMPO VETORIAL SERIA QUE AS INFORMAÇÕES PODERIA SER
+JOGADAS EM DIFERENTES COLUNAS DE UMA OUTRA TABELA.
+
+3. TODA TABELA NECESSITA DE PELO MENOS UM CAMPO 
+QUE IDENTIFIQUE O REGISTRO (A TUPLA) COMO SENDO
+ÚNICO. É O QUE CHAMAMOS DE PRIMARY KEY.
+
+*/
+
+
+SELECT NOME FROM CLIENTE JOIN LIVROS ON CLIENTE.SEXO = LIVROS.SEXO;
+
+
+CREATE TABLE A(
+	CODIGO INT PRIMARY KEY,
+	NOME VARCHAR(30)
+);
+
+CREATE TABLE B(
+	LANCA INT PRIMARY KEY,
+	CODIGO INT,
+	VALOR DOUBLE
+);
+
+INSERT INTO A VALUES(1, 'UM');
+INSERT INTO A VALUES(2, 'DOIS');
+INSERT INTO A VALUES(3, 'TRÊS');
+INSERT INTO A VALUES(4, 'QUATRO');
+INSERT INTO A VALUES(5, 'CINCO');
+
+INSERT INTO B VALUES(1, 1, 1.000);
+INSERT INTO B VALUES(2, 1, 2.000);
+INSERT INTO B VALUES(3, 1, 5.000);
+INSERT INTO B VALUES(4, 2, 4.000);
+INSERT INTO B VALUES(5, 2, 9.000);
+INSERT INTO B VALUES(6, 3, 7.000);
+INSERT INTO B VALUES(7, 5, 4.000);
+INSERT INTO B VALUES(8, 8, 7.000);
+
+
+
+/* Lógico_1: */
+
+CREATE TABLE CLIENTE (
+    idcliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(30) NOT NULL,
+    sexo ENUM('M','F') NOT NULL,
+    email VARCHAR(50) UNIQUE,
+    cpf VARCHAR(15) UNIQUE
+);
+
+CREATE TABLE TELEFONE (
+    idtelefone INT PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR(30) NOT NULL,
+    numero VARCHAR(17) NOT NULL,
+	id_cliente INT,
+	FOREIGN KEY(id_cliente)
+	REFERENCES CLIENTE(idcliente)
+);
+
+CREATE TABLE ENDERECO (
+    idendereco INT PRIMARY KEY AUTO_INCREMENT,
+    rua VARCHAR(30) NOT NULL,
+    bairro VARCHAR(30) NOT NULL,
+    cidade VARCHAR(30) NOT NULL,
+    estado CHAR(2) NOT NULL,
+	id_cliente INT UNIQUE,
+	FOREIGN KEY(id_cliente)
+	REFERENCES CLIENTE(idcliente)
+);
+
+
+
+/*
+ENDERECO - OBRIGATÓRIO
+CADASTRO DE SOMENTE UM
+
+TELEFONE - NÃO OBRIGATORIO
+CADASTRO DE MAIS DE UM (OPCIONAL) 
+*/
+
+/* 
+EM UM RELACIONAMENTO 1 X 1 A CHAVE ESTRANGEIRA FICA NA TABELA MAIS FRACA 
+
+EM UM RELACIONAMENTO 1 X N A CHAVE ESTRANGEIRA FICARÁ 
+SEMPRE NA CARDINALIDADE N 
+*/
+
+INSERT INTO CLIENTE VALUES(NULL, 'JOAO', 'M', 'JOAO@GMAIL.COM', '12345678900');
+INSERT INTO CLIENTE VALUES(NULL, 'CARLOS', 'M', 'CARLOS@GMAIL.COM', '11223344556');
+INSERT INTO CLIENTE VALUES(NULL, 'ANA', 'F', 'ANA@GMAIL.COM', '22334455667');
+INSERT INTO CLIENTE VALUES(NULL, 'CLARA', 'F', NULL, '33445566778');
+INSERT INTO CLIENTE VALUES(NULL, 'JORGE', 'M', 'JORGE@GMAIL.COM', '44556677889');
+INSERT INTO CLIENTE VALUES(NULL, 'CELIA', 'F', 'CELIA@GMAIL.COM', '55667788991');
+
+SELECT * FROM CLIENTE;
++-----------+--------+------+------------------+-------------+
+| idcliente | nome   | sexo | email            | cpf         |
++-----------+--------+------+------------------+-------------+
+|         1 | JOAO   | M    | JOAO@GMAIL.COM   | 12345678900 |
+|         2 | CARLOS | M    | CARLOS@GMAIL.COM | 11223344556 |
+|         3 | ANA    | F    | ANA@GMAIL.COM    | 22334455667 |
+|         4 | CLARA  | F    | NULL             | 33445566778 |
+|         5 | JORGE  | M    | JORGE@GMAIL.COM  | 44556677889 |
+|         6 | CELIA  | F    | CELIA@GMAIL.COM  | 55667788991 |
++-----------+--------+------+------------------+-------------+
+
+
+DESC ENDERECO;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| idendereco | int(11)     | NO   | PRI | NULL    | auto_increment |
+| rua        | varchar(30) | NO   |     | NULL    |                |
+| bairro     | varchar(30) | NO   |     | NULL    |                |
+| cidade     | varchar(30) | NO   |     | NULL    |                |
+| estado     | char(2)     | NO   |     | NULL    |                |
+| id_cliente | int(11)     | YES  | UNI | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+
+INSERT INTO ENDERECO VALUES(NULL, 'RUA ANTONIO SA', 'CENTRO', 'B. HORIZONTE', 'MG', 4);
+INSERT INTO ENDERECO VALUES(NULL, 'RUA CAPITAO HERMES', 'CENTRO', 'RIO DE JANEIRO', 'RJ', 1);
+INSERT INTO ENDERECO VALUES(NULL, 'RUA PRES. VARGAS', 'JARDINS', 'SAO PAULO', 'SP', 3);
+INSERT INTO ENDERECO VALUES(NULL, 'RUA ALFANDEGA', 'ESTACIO', 'RIO DE JANEIRO', 'RJ', 2);
+INSERT INTO ENDERECO VALUES(NULL, 'RUA DO. OUVIDORIA', 'FLAMENGO', 'RIO DE JANEIRO', 'RJ', 6);
+INSERT INTO ENDERECO VALUES(NULL, 'RUA URUGUAIANA', 'CENTRO', 'VITORIA', 'ES', 5);
+
+
+DESC TELEFONE;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| idtelefone | int(11)     | NO   | PRI | NULL    | auto_increment |
+| tipo       | varchar(30) | NO   |     | NULL    |                |
+| numero     | varchar(17) | NO   |     | NULL    |                |
+| id_cliente | int(11)     | YES  | MUL | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+
+INSERT INTO TELEFONE VALUES(NULL,'CEL','0011223344',5);
+INSERT INTO TELEFONE VALUES(NULL,'RES','56576876',5);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','87866896',1);
+INSERT INTO TELEFONE VALUES(NULL,'COM','54768899',2);
+INSERT INTO TELEFONE VALUES(NULL,'RES','99667587',1);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','78989765',3);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','99766676',3);
+INSERT INTO TELEFONE VALUES(NULL,'COM','66687899',1);
+INSERT INTO TELEFONE VALUES(NULL,'RES','89986668',5);
+INSERT INTO TELEFONE VALUES(NULL,'CEL','88687909',2);
+
+
+
+
+/* ##########  PROJEÇÃO, SELEÇÃO E JUNÇÃO  ########### */ 
+
+
+/* =-=-=-=  PROJEÇÃO  =-=-=-= */
+/* É TUDO QUE VC QUER VER NA TELA */
+SELECT 2 + 2 AS SOMA, NOME, NOW() FROM CLIENTE;''
+
+
+/* =-=-=-=  SELEÇÃO  =-=-=-= */
+/* É UM SUBCONJUNTO DE UM CONJUNTO TOTAL DE REGISTROS DE UMA TABELA */
+A CLÁSULA DE SELEÇÃO É O WHERE */  
+SELECT NOME, SEXO, EMAIL
+FROM CLIENTE
+WHERE SEXO = 'F';
+
+SELECT NUMERO
+FROM TELEFONE
+WHERE TIPO = 'CEL';
+
+
+/* =-=--=-= JUNÇÃO OU JOIN =-=-=-= */
+
+SELECT NOME, SEXO, IDCLIENTE 
+FROM CLIENTE;
++--------+------------------+-----------+
+| NOME   | EMAIL            | IDCLIENTE |
++--------+------------------+-----------+
+| JOAO   | JOAO@GMAIL.COM   |         1 |
+| CARLOS | CARLOS@GMAIL.COM |         2 |
+| ANA    | ANA@GMAIL.COM    |         3 |
+| CLARA  | NULL             |         4 |
+| JORGE  | JORGE@GMAIL.COM  |         5 |
+| CELIA  | CELIA@GMAIL.COM  |         6 |
++--------+------------------+-----------+
+
+SELECT ID_CLIENTE, BAIRRO, CIDADE
+FROM ENDERECO;
++------------+----------+----------------+
+| ID_CLIENTE | BAIRRO   | CIDADE         |
++------------+----------+----------------+
+|          4 | CENTRO   | B. HORIZONTE   |
+|          1 | CENTRO   | RIO DE JANEIRO |
+|          3 | JARDINS  | SAO PAULO      |
+|          2 | ESTACIO  | RIO DE JANEIRO |
+|          6 | FLAMENGO | RIO DE JANEIRO |
+|          5 | CENTRO   | VITORIA        |
++------------+----------+----------------+
+
+
+SELECT NOME, SEXO, BAIRRO, CIDADE 
+FROM CLIENTE, ENDERECO
+WHERE IDCLIENTE = ID_CLIENTE;
++--------+------+----------+----------------+
+| NOME   | SEXO | BAIRRO   | CIDADE         |
++--------+------+----------+----------------+
+| JOAO   | M    | CENTRO   | RIO DE JANEIRO |
+| CARLOS | M    | ESTACIO  | RIO DE JANEIRO |
+| ANA    | F    | JARDINS  | SAO PAULO      |
+| CLARA  | F    | CENTRO   | B. HORIZONTE   |
+| JORGE  | M    | CENTRO   | VITORIA        |
+| CELIA  | F    | FLAMENGO | RIO DE JANEIRO |
++--------+------+----------+----------------+
+
+
+SELECT NOME, SEXO, BAIRRO, CIDADE 
+FROM CLIENTE
+INNER JOIN ENDERECO
+ON IDCLIENTE = ID_CLIENTE;
++--------+------+----------+----------------+
+| NOME   | SEXO | BAIRRO   | CIDADE         |
++--------+------+----------+----------------+
+| JOAO   | M    | CENTRO   | RIO DE JANEIRO |
+| CARLOS | M    | ESTACIO  | RIO DE JANEIRO |
+| ANA    | F    | JARDINS  | SAO PAULO      |
+| CLARA  | F    | CENTRO   | B. HORIZONTE   |
+| JORGE  | M    | CENTRO   | VITORIA        |
+| CELIA  | F    | FLAMENGO | RIO DE JANEIRO |
++--------+------+----------+----------------+
+
+
+SELECT NOME, SEXO, BAIRRO, CIDADE /* PROJEÇÃO */
+FROM CLIENTE /* ORIGEM */
+INNER JOIN ENDERECO /* JUNÇÃO */
+ON IDCLIENTE = ID_CLIENTE 
+WHERE SEXO = 'F'; /* SELEÇÃO */
+
+
+/* NOME, SEXO, EMAIL E TELEFONE */
+SELECT NOME, SEXO, EMAIL, TIPO, NUMERO
+FROM CLIENTE
+INNER JOIN TELEFONE
+ON IDCLIENTE = ID_CLIENTE;
+
+
+/* PROJETANDO NOME, SEXO, BAIRRO, CIDADE, TIPO, NUMERO */
+
+/* O MYSQL NÃO CONSEGUE IDENTIIFICAR QUAL ATRIBUTO É DE QUAL TABELA,
+PORTANTO INDICAMOS O NOME DA TABELA ANTES DOS ATRIBUTOS */
+SELECT NOME, SEXO, BAIRRO, CIDADE, TIPO, NUMERO
+FROM CLIENTE
+INNER JOIN ENDERECO
+ON CLIENTE.IDCLIENTE = ENDERECO.ID_CLIENTE
+INNER JOIN TELEFONE
+ON CLIENTE.IDCLIENTE = TELEFONE.ID_CLIENTE;
++--------+------+---------+----------------+------+------------+
+| NOME   | SEXO | BAIRRO  | CIDADE         | TIPO | NUMERO     |
++--------+------+---------+----------------+------+------------+
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | CEL  | 87866896   |
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | RES  | 99667587   |
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | COM  | 66687899   |
+| CARLOS | M    | ESTACIO | RIO DE JANEIRO | COM  | 54768899   |
+| CARLOS | M    | ESTACIO | RIO DE JANEIRO | CEL  | 88687909   |
+| ANA    | F    | JARDINS | SAO PAULO      | CEL  | 78989765   |
+| ANA    | F    | JARDINS | SAO PAULO      | CEL  | 99766676   |
+| JORGE  | M    | CENTRO  | VITORIA        | CEL  | 0011223344 |
+| JORGE  | M    | CENTRO  | VITORIA        | RES  | 56576876   |
+| JORGE  | M    | CENTRO  | VITORIA        | RES  | 89986668   |
++--------+------+---------+----------------+------+------------+
+
+/* TAMBÉM PODEMOS APELIDAR AS TABELAS (PONTEIRAMENTO) */
+SELECT NOME, SEXO, BAIRRO, CIDADE, TIPO, NUMERO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+INNER JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
++--------+------+---------+----------------+------+------------+ (MESMO RESULTADO DA PROJEÇÃO ACIMA)
+| NOME   | SEXO | BAIRRO  | CIDADE         | TIPO | NUMERO     |
++--------+------+---------+----------------+------+------------+
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | CEL  | 87866896   |
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | RES  | 99667587   |
+| JOAO   | M    | CENTRO  | RIO DE JANEIRO | COM  | 66687899   |
+| CARLOS | M    | ESTACIO | RIO DE JANEIRO | COM  | 54768899   |
+| CARLOS | M    | ESTACIO | RIO DE JANEIRO | CEL  | 88687909   |
+| ANA    | F    | JARDINS | SAO PAULO      | CEL  | 78989765   |
+| ANA    | F    | JARDINS | SAO PAULO      | CEL  | 99766676   |
+| JORGE  | M    | CENTRO  | VITORIA        | CEL  | 0011223344 |
+| JORGE  | M    | CENTRO  | VITORIA        | RES  | 56576876   |
+| JORGE  | M    | CENTRO  | VITORIA        | RES  | 89986668   |
++--------+------+---------+----------------+------+------------+
+
+
+
+/*
+	DML - DATA MANAGE LANGUAGE
+	DDL - DATA DEFINITION LANGUAGE
+	DCL - DATA CONTROL LANGUAGE
+	TCL - TRANSACTION CONTROL LANGUAGE
+*/
+
+/* =-=-=-=  CATEGORIA DML(DATA MANAGE LANGUAGE OU )  =-=-=-= */
+
+/* INSERT */
+INSERT INTO CLIENTE VALUES(NULL, 'PAULA', 'M', NULL, '77437493');
+INSERT INTO ENDERECO VALUES(NULL, 'RUA JOAQUIM SILVA', 'ALVORADA', 'NITEROI', 'RJ', 7);
+
+/* FILTRO */
+SELECT * FROM CLIENTE
+WHERE SEXO = 'M';
+
+/* UPDATE */
+SELECT * FROM CLIENTE
+WHERE IDCLIENTE = 7;
+
+UPDATE CLIENTE
+SET SEXO = 'F'
+WHERE IDCLIENTE = 7;
+
+/* DELETE */
+INSERT INTO CLIENTE VALUES(NULL, 'XXX', 'M', NULL, 'XXX');
+
+SELECT * FROM CLIENTE
+WHERE IDCLIENTE = 8;
+
+DELETE FROM CLIENTE
+WHERE IDCLIENTE = 8;
+
+ 
+/* =-=-=-=  CATEGORIA DDL(DATA DEFINITION LANGUAGE)  =-=-=-= */
+
+CREATE TABLE PRODUTO(
+	IDPRODUTO INT PRIMARY KEY AUTO_INCREMENT,
+	NOME_PRODUTO VARCHAR(30) NOT NULL,
+	PRECO INT,
+	FRETE FLOAT(10, 2) NOT NULL
+);
+
+/* ALTER TABLE -> CHANGE */ 
+
+ALTER TABLE PRODUTO
+CHANGE PRECO VALOR_UNITARIO INT NOT NULL;
+
+DESC PRODUTO;
++----------------+-------------+------+-----+---------+----------------+
+| Field          | Type        | Null | Key | Default | Extra          |
++----------------+-------------+------+-----+---------+----------------+
+| IDPRODUTO      | int         | NO   | PRI | NULL    | auto_increment |
+| NOME_PRODUTO   | varchar(30) | NO   |     | NULL    |                |
+| VALOR_UNITARIO | int         | NO   |     | NULL    |                |
+| FRETE          | float(10,2) | NO   |     | NULL    |                |
++----------------+-------------+------+-----+---------+----------------+
+
+ALTER TABLE PRODUTO
+CHANGE VALOR_UNITARIO VALOR_UNITARIO INT; /* OS NOMES SE REPETEM, HÁ UMA FORMA MAIS EFICIENTE */
+
+DESC PRODUTO;
++----------------+-------------+------+-----+---------+----------------+
+| Field          | Type        | Null | Key | Default | Extra          |
++----------------+-------------+------+-----+---------+----------------+
+| IDPRODUTO      | int         | NO   | PRI | NULL    | auto_increment |
+| NOME_PRODUTO   | varchar(30) | NO   |     | NULL    |                |
+| VALOR_UNITARIO | int         | YES  |     | NULL    |                |
+| FRETE          | float(10,2) | NO   |     | NULL    |                |
++----------------+-------------+------+-----+---------+----------------+
+
+
+/* MODIFY - ALTERANDO O TIPO */
+
+ALTER TABLE PRODUTO
+MODIFY VALOR_UNITARIO VARCHAR(50) NOT NULL;
+
+DESC PRODUTO;
++----------------+-------------+------+-----+---------+----------------+
+| Field          | Type        | Null | Key | Default | Extra          |
++----------------+-------------+------+-----+---------+----------------+
+| IDPRODUTO      | int         | NO   | PRI | NULL    | auto_increment |
+| NOME_PRODUTO   | varchar(30) | NO   |     | NULL    |                |
+| VALOR_UNITARIO | varchar(50) | NO   |     | NULL    |                |
+| FRETE          | float(10,2) | NO   |     | NULL    |                |
++----------------+-------------+------+-----+---------+----------------+
+
+
+/* ADD - ADICIONANDO COLUNAS */
+
+ALTER TABLE PRODUTO
+ADD PESO FLOAT(10, 2) NOT NULL;
+
+/* DROP - APAGANDO UMA COLUNA */
+
+ALTER TABLE PRODUTO
+DROP COLUMN PESO;
+
+/* ADD AFTER - ADICIONANDO UMA COLUNA NUMA ORDEM ESPECÍFICA */
+
+ALTER TABLE PRODUTO
+ADD COLUMN PESO FLOAT(10, 2) NOT NULL
+AFTER NOME_PRODUTO;
+
+ALTER TABLE PRODUTO
+DROP COLUMN PESO;
+
+ALTER TABLE PRODUTO
+ADD COLUMN PESO FLOAT(10, 2) NOT NULL
+FIRST;
+
+
+/* =-=-=-=-=  EXERCÍCIO DE DML  =-=-=-=-= */
+
+/* RELATORIO GERAL DE TODOS OS CLIENTES */
+
+/* RELATORIO GERAL DE TODOS OS CLIENTES (TELEFONE E ENDERECO) */
+SHOW TABLES;
+
+DESC CLIENTE;
++-----------+---------------+------+-----+---------+----------------+
+| Field     | Type          | Null | Key | Default | Extra          |
++-----------+---------------+------+-----+---------+----------------+
+| idcliente | int           | NO   | PRI | NULL    | auto_increment |
+| nome      | varchar(30)   | NO   |     | NULL    |                |
+| sexo      | enum('M','F') | NO   |     | NULL    |                |
+| email     | varchar(50)   | YES  | UNI | NULL    |                |
+| cpf       | varchar(15)   | YES  | UNI | NULL    |                |
++-----------+---------------+------+-----+---------+----------------+
+
+DESC ENDERECO;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| idendereco | int         | NO   | PRI | NULL    | auto_increment |
+| rua        | varchar(30) | NO   |     | NULL    |                |
+| bairro     | varchar(30) | NO   |     | NULL    |                |
+| cidade     | varchar(30) | NO   |     | NULL    |                |
+| estado     | char(2)     | NO   |     | NULL    |                |
+| id_cliente | int         | YES  | UNI | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+
+DESC TELEFONE;
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| idtelefone | int         | NO   | PRI | NULL    | auto_increment |
+| tipo       | varchar(30) | NO   |     | NULL    |                |
+| numero     | varchar(17) | NO   |     | NULL    |                |
+| id_cliente | int         | YES  | MUL | NULL    |                |
++------------+-------------+------+-----+---------+----------------+
+
+SELECT C.IDCLIENTE, C.NOME, C.SEXO, C.EMAIL, C.CPF,
+	E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+	T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON IDCLIENTE = T.ID_CLIENTE
+ORDER BY IDCLIENTE;
+
+
+/* RELATORIO DE HOMENS */
+SELECT C.IDCLIENTE, C.NOME, C.SEXO, C.EMAIL, C.CPF,
+	E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+	T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON IDCLIENTE = T.ID_CLIENTE
+WHERE SEXO = 'M'
+ORDER BY IDCLIENTE;
+
+/* ALGUMAS MULHERES ESTAVAM COM SEXO M */
+UPDATE CLIENTE 
+SET SEXO = 'F'
+WHERE IDCLIENTE IN (12, 13, 14, 18, 19);
+
+/* RELATORIO DE MULHERES */
+SELECT C.IDCLIENTE, C.NOME, C.SEXO, C.EMAIL, C.CPF,
+	E.RUA, E.BAIRRO, E.CIDADE, E.ESTADO,
+	T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON IDCLIENTE = T.ID_CLIENTE
+WHERE SEXO = 'F'
+ORDER BY IDCLIENTE;
+
+/* QUANTIDADE DE HOMENS E MULHERES */
+SELECT SEXO, COUNT(*) AS 'QUANTIDADE'
+FROM CLIENTE
+GROUP BY SEXO; 
+
+/* IDS E EMAIL DAS MULHERES QUE MOREM NO CENTRO DO RIO DE JANEIRO E 
+NAO TENHAM CELULAR */
+
+SELECT IDCLIENTE, EMAIL, NOME, SEXO
+FROM CLIENTE
+INNER JOIN ENDERECO E
+ON IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON IDCLIENTE = T.ID_CLIENTE
+WHERE IDCLIENTE != ALL
+(SELECT ID_CLIENTE
+FROM TELEFONE
+WHERE TIPO IN ('CEL')) 
+AND SEXO IN ('F') 
+AND BAIRRO = 'CENTRO'
+AND CIDADE = 'RIO DE JANEIRO'
+GROUP BY IDCLIENTE;
+
+
+/* PARA UMA CAMPANHA DE MARKETING, O SETOR SOLICITOU UM
+RELATÓRIO COM O NOME, EMAIL E TELEFONE CELULAR 
+DOS CLIENTES QUE MORAM NO ESTADO DO RIO DE JANEIRO 
+VOCÊ TERÁ QUE PASSAR A QUERY PARA GERAR O RELATORIO PARA
+O PROGRAMADOR */
+
+SELECT C.NOME, C.EMAIL, T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+WHERE E.ESTADO IN ('RJ')
+AND T.TIPO IN ('CEL');
+
+/* PARA UMA CAMPANHA DE PRODUTOS DE BELEZA, O COMERCIAL SOLICITOU UM
+RELATÓRIO COM O NOME, EMAIL E TELEFONE CELULAR 
+DAS MULHERES QUE MORAM NO ESTADO DE SÃO PAULO 
+VOCÊ TERÁ QUE PASSAR A QUERY PARA GERAR O RELATORIO PARA
+O PROGRAMADOR */
+
+SELECT C.NOME, C.EMAIL, T.NUMERO, T.TIPO
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+WHERE C.SEXO = 'F' 
+AND E.ESTADO = 'SP';
+
+
+
+
+
+
+/* ###############  UTILIZANDO A FUNÇÃO IFNULL()  ############### */
+
+SELECT C.NOME, 
+	   C.EMAIL, 
+	   E.ESTADO,
+	   T.NUMERO   
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
++---------+-------------------+--------+------------+
+| NOME    | EMAIL             | ESTADO | NUMERO     |
++---------+-------------------+--------+------------+
+| CLARA   | NULL              | MG     | NULL       |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 87866896   |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 99667587   |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 66687899   |
+| ANA     | ANA@GMAIL.COM     | SP     | 78989765   |
+| ANA     | ANA@GMAIL.COM     | SP     | 99766676   |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 54768899   |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 88687909   |
+| CELIA   | CELIA@GMAIL.COM   | RJ     | NULL       |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 0011223344 |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 56576876   |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 89986668   |
+| PAULA   | NULL              | RJ     | NULL       |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 68976565   |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 99656675   |
+| ANDRE   | ANDRE@GLOBO.COM   | RJ     | NULL       |
+| GIOVANA | NULL              | RJ     | 33567765   |
+| GIOVANA | NULL              | RJ     | 88668786   |
+| GIOVANA | NULL              | RJ     | 55689654   |
+| KARLA   | KARLA@GMAIL.COM   | RJ     | 88687979   |
+| DANIELE | DANIELE@GMAIL.COM | ES     | 88965676   |
+| LORENA  | NULL              | RJ     | NULL       |
+| EDUARDO | NULL              | PR     | 89966809   |
+| ANTONIO | ANTONIO@IG.COM    | SP     | 88679978   |
+| ANTONIO | ANTONIO@UOL.COM   | PR     | 99655768   |
+| ELAINE  | ELAINE@GLOBO.COM  | SP     | 89955665   |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 77455786   |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 89766554   |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 77755785   |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 44522578   |
+| JOICE   | JOICE@GMAIL.COM   | RJ     | NULL       |
++---------+-------------------+--------+------------+
+
+SELECT C.NOME, 
+	   IFNULL(C.EMAIL, "***************") AS "E-MAIL", 
+	   E.ESTADO,
+	   IFNULL(T.NUMERO , "**********") AS "NUMERO"
+FROM CLIENTE C
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE;
+
++---------+-------------------+--------+------------+
+| NOME    | E-MAIL            | ESTADO | NUMERO     |
++---------+-------------------+--------+------------+
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 87866896   |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 99667587   |
+| JOAO    | JOAO@GMAIL.COM    | RJ     | 66687899   |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 54768899   |
+| CARLOS  | CARLOS@GMAIL.COM  | RJ     | 88687909   |
+| ANA     | ANA@GMAIL.COM     | SP     | 78989765   |
+| ANA     | ANA@GMAIL.COM     | SP     | 99766676   |
+| CLARA   | ***************   | MG     | ********** |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 0011223344 |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 56576876   |
+| JORGE   | JORGE@GMAIL.COM   | ES     | 89986668   |
+| CELIA   | CELIA@GMAIL.COM   | RJ     | ********** |
+| PAULA   | ***************   | RJ     | ********** |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 68976565   |
+| FLAVIO  | FLAVIO@IG.COM     | MG     | 99656675   |
+| ANDRE   | ANDRE@GLOBO.COM   | RJ     | ********** |
+| GIOVANA | ***************   | RJ     | 33567765   |
+| GIOVANA | ***************   | RJ     | 88668786   |
+| GIOVANA | ***************   | RJ     | 55689654   |
+| KARLA   | KARLA@GMAIL.COM   | RJ     | 88687979   |
+| DANIELE | DANIELE@GMAIL.COM | ES     | 88965676   |
+| LORENA  | ***************   | RJ     | ********** |
+| EDUARDO | ***************   | PR     | 89966809   |
+| ANTONIO | ANTONIO@IG.COM    | SP     | 88679978   |
+| ANTONIO | ANTONIO@UOL.COM   | PR     | 99655768   |
+| ELAINE  | ELAINE@GLOBO.COM  | SP     | 89955665   |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 77455786   |
+| CARMEM  | CARMEM@IG.COM     | RJ     | 89766554   |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 77755785   |
+| ADRIANA | ADRIANA@GMAIL.COM | RJ     | 44522578   |
+| JOICE   | JOICE@GMAIL.COM   | RJ     | ********** |
++---------+-------------------+--------+------------+
+
+
+
+
+
+
+/* ###############  UTILIZANDO VIEWS'S  ###############*/
+
+SELECT 	C.NOME, 
+		C.EMAIL, 
+		C.SEXO, 
+		T.TIPO, 
+		T.NUMERO, 
+		E.BAIRRO, 
+		E.RUA, 
+		E.ESTADO
+FROM CLIENTE C
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE;
+
+
+CREATE VIEW RELATORIO AS
+SELECT 	C.NOME, 
+		C.EMAIL, 
+		C.SEXO, 
+		T.TIPO, 
+		T.NUMERO, 
+		E.BAIRRO, 
+		E.RUA, 
+		E.ESTADO
+FROM CLIENTE C
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE;
+
+
+DROP VIEW RELATORIO; /* APAGAR UMA VIEW */
+
+/* É MUITO INTERESSANTE UTILIZAR PREFIXOS PARA IDENTIFICAR UMA VIEW */
+CREATE VIEW V_RELATORIO AS
+SELECT 	C.NOME, 
+		IFNULL(C.EMAIL, "**************") AS "E-MAIL",
+		C.SEXO, 
+		T.TIPO, 
+		IFNULL(T.NUMERO, "**********") AS "NUMERO",
+		E.BAIRRO, 
+		E.RUA, 
+		E.ESTADO
+FROM CLIENTE C
+LEFT JOIN TELEFONE T
+ON C.IDCLIENTE = T.ID_CLIENTE
+INNER JOIN ENDERECO E
+ON C.IDCLIENTE = E.ID_CLIENTE;
+
+
+
+
+
+
+/* ###############  OPERAÇÕES DML EM VIEW  ############### */
+
+/* EM UMA VIEW COM JOIN, APENAS O UPDATE É QUE SERÁ PERMITIDO.
+JÁ SEM JOIN, TODOS OS TRÊS SERÃO PERMITIDOS.
+DETALHE: É INTERESSANTE SEMPRE VERIFICAR SE A TABELA 
+PERMITE UPDATE PELA DATABASE INFORMATION_SCHEMA  */
+USE INFORMATION_SCHEMA;
+
+SELECT TABLE_NAME, IS_UPDATABLE
+FROM VIEWS
+WHERE TABLE_SCHEMA = 'COMERCIO';
+
+
+INSERT INTO V_RELATORIO
+VALUES ("ANDREIA", "ANDREIA@UOL.COM.BR", 'F', "CEL", "87354768", "CENTRO", "VITORIA", "ES");
+/* O ERRO ABAIXO OCORRE, POIS HÁ JOIN NA VIEW */
+ERROR 1471 (HY000): The target table V_RELATORIO of the INSERT is not insertable-into 
+
+DELETE FROM V_RELATORIO
+WHERE NOME = "JORGE";
+/* NOVAMENTE UM ERRO DEVIDO A NÃO SER POSSÍVEL DELETAR
+UM REGISTRO DE UMA VIEW QUE TEM JOIN */
+ERROR 1288 (HY000): The target table V_RELATORIO of the DELETE is not updatable
+
+UPDATE V_RELATORIO
+SET NOME = "JOSE"
+WHERE NOME = "JORGE";
+
+CREATE TABLE JOGADORES(
+	IDJOGADOR INT,
+	NOME VARCHAR(30),
+	ESTADO CHAR(2)
+);
+
+INSERT INTO JOGADORES VALUES (1, "GUERRERO", "RS");
+INSERT INTO JOGADORES VALUES (2, "GABIGOL", "RJ");
+INSERT INTO JOGADORES VALUES (3, "GANSO", "RJ");
+INSERT INTO JOGADORES VALUES (4, "NENÊ", "RJ");
+INSERT INTO JOGADORES VALUES (5, "LOVE", "SP");
+
+CREATE VIEW V_JOGADORES AS
+SELECT NOME, ESTADO;
+
+USE INFORMATION_SCHEMA;
+
+SELECT TABLE_NAME, IS_UPDATABLE
+FROM VIEWS
+WHERE TABLE_SCHEMA = 'COMERCIO';
+
+ 
+
+/* ORDER BY */
+
+CREATE TABLE ALUNOS(
+	NUMERO INT,
+	NOME VARCHAR(30)
+);
+
+INSERT INTO ALUNOS VALUES(1,'JOAO');
+INSERT INTO ALUNOS VALUES(1,'MARIA');
+INSERT INTO ALUNOS VALUES(2,'ZOE');
+INSERT INTO ALUNOS VALUES(2,'ANDRE');
+INSERT INTO ALUNOS VALUES(3,'CLARA');
+INSERT INTO ALUNOS VALUES(1,'CLARA');
+INSERT INTO ALUNOS VALUES(4,'MAFRA');
+INSERT INTO ALUNOS VALUES(5,'JANAINA');
+INSERT INTO ALUNOS VALUES(1,'JANAINA');
+INSERT INTO ALUNOS VALUES(3,'MARCELO');
+INSERT INTO ALUNOS VALUES(4,'GIOVANI');
+INSERT INTO ALUNOS VALUES(5,'ANTONIO');
+INSERT INTO ALUNOS VALUES(6,'ANA');
+INSERT INTO ALUNOS VALUES(6,'VIVIANE');
+
+SELECT * FROM ALUNOS
+ORDER BY NUMERO;
+
+SELECT * FROM ALUNOS
+ORDER BY 1;
+
+SELECT * FROM ALUNOS
+ORDER BY 2;
+
+SELECT * FROM ALUNOS
+ORDER BY NUMERO, NOME;
+
+SELECT * FROM ALUNOS
+ORDER BY 1 DESC, 2 DESC; /* ORDEM DECRESCENTE */
+
+
+
+
+
+/* ###############  DELIMITADOR ############### */
+
+/* O ";" É O DELIMITADOR PADRÃO DO MYSQL */
+
+STATUS /* COMANDO PARA VERIFICAR O STATUS DE UMA DATABASE */
+
+DELIMITER $ /* ALTERA O DELIMITADOR, NO CASO, PARA O "$" */
+
+
+
+
+
+/* ###############  CRIANDO UMA PROCEDURE  ############### */  
+
+/* ANTES DE COMEÇAR A CRIAR A PROCEDURE É MUITO IMPORTANTE 
+ALTERAR O DELIMITADOR PARA NÃO GERAR ERRO NO BLOCO DA PROCEDUURE */
+
+
+DELIMITER $
+
+
+CREATE PROCEDURE SOMA()
+BEGIN /* INÍCIO DA PROCEDURE */
+	SELECT 10 + 10 AS CONTA; /* USO DO DELIMITADOR PADRÃO PARA O
+	BLOCO DE CÓDIGO DA PROCEDURE */ 
+
+END /* FIM DA PROCEDURE */
+$ /* USO DO DELIMITADOR JÁ ALTERADO */ 
+
+
+DELIMITER ; /* ALTERANDO DELIMITER PARA O PADRÃO NOVAMENTE */
+
+CALL SOMA(); /* COMANDO PARA CHAMAR A PROCEDURE */
+
+DROP PROCEDURE SOMA; /* COMANDO PARA APAGAR UMA PROCEDURE */
+
+
+/* PROCEDURE COM PARÂMETROS */
+
+DELIMITER $
+
+CREATE PROCEDURE SOMA(NUM1 INT, NUM2 INT)
+BEGIN 
+	SELECT NUM1 + NUM2 AS CONTA;
+
+END 
+$ 
+
+DELIMITER ;
+
+CALL SOMA(50, 100);
+
+
+
+
+
+/* ############### PROCEDURES COM QUERY ############### */
+
+CREATE DATABASE PROJETO;
+
+USE PROJETO;
+
+CREATE TABLE CURSOS(
+	IDCURSO INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(30) NOT NULL,
+	HORAS INT(3) NOT NULL,
+	VALOR FLOAT(10, 2) NOT NULL 	
+);
+
+INSERT INTO CURSOS VALUES(NULL, 'JAVA', 30, 500.00);
+INSERT INTO CURSOS VALUES(NULL, 'FUNDAMENTOS DE BANCOS DE DADOS', 40, 700.00);
+
+DELIMITER $
+
+CREATE PROCEDURE CAD_CURSO(
+	P_NOME VARCHAR(100),
+	P_HORAS INT(3),
+	P_VALOR FLOAT(10, 2))
+
+BEGIN
+
+	INSERT INTO CURSOS VALUES(NULL, P_NOME, P_HORAS, P_VALOR);
+
+END
+
+$
+
+DELIMITER ;
+
+CALL CAD_CURSO('BI SQL SERVER', 35, 3000.00);
+CALL CAD_CURSO('POWER BI', 20, 1000.00);
+CALL CAD_CURSO('TABLEAU', 30, 1200.00);
+
+
+/* ------------  CRIAR UMA PROCEDURE PARA CONSULTAR CURSOS  ------------ */
+
+CALL CAD_CURSO('AWS CLOUD COMPUTING', 10, 250.00);
+CALL CAD_CURSO('GESTÃO DE PROJETOS', 7200, 5000.00);
+CALL CAD_CURSO('PYTHON E MACHINE LEARNING', 2500, 800.00);
+
+
+DELIMITER $
+
+CREATE PROCEDURE CONSULTAR_CURSO(
+	P_IDCURSO INT(3))
+
+BEGIN
+	SELECT NOME, HORAS, VALOR
+	FROM CURSOS
+	WHERE IDCURSO = P_IDCURSO;
+END
+
+$
+
+DELIMITER ;
+
+CALL CONSULTAR_CURSO(2);
+
+DROP PROCEDURE CONSULTAR_CURSO;
+
+
+
+
+
